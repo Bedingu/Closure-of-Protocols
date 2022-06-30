@@ -1,0 +1,450 @@
+#Selenium para abrir o Chrome
+
+import pandas as pd
+
+import time
+
+from selenium import webdriver
+
+from openpyxl import Workbook
+
+from pykeepass import PyKeePass
+
+from selenium.webdriver.common.action_chains import ActionChains
+
+import getpass
+
+
+#kp = PyKeePass('C:\Users\800046024\Desktop\Chaves.kdbx', password='somePassw0rd')
+
+
+keepass_path = 'C:/Users/800046024/Desktop/'
+
+keepass_file = 'keys.kdbx'
+
+while True:
+
+    try:
+
+        pwd = getpass.getpass("Keepass (%s): " % keepass_file)
+
+    except KeyboardInterrupt as e:
+
+        #logging.info("Terminating the Application...")
+
+        print("\n\nTerminating the Application...\n")
+
+        exit(0)
+
+    try:
+
+        kp = PyKeePass(keepass_path + keepass_file, password=pwd)
+
+        break
+
+    except Exception as e:
+
+        #logging.warn("Invalid Password...")
+
+        print("\nInvalid Password.\n")
+
+print("Granted Access")
+
+ 
+
+#from selenium.webdriver.common.keys import Keys
+
+driver = webdriver.Edge(executable_path=r'//panffsp2515d/41 - AUTOMAÇÕES/Libs_python/msedgedriver.exe')
+
+driver.get('https://Login.aspx')
+
+
+entry = kp.find_entries(title='Encerramento', first=True)
+
+
+#Login SPA 2430
+
+login = driver.find_element_by_name('TxtLogin')
+
+login.clear()
+
+login.send_keys(entry.username)
+
+
+pswrd = driver.find_element_by_name('TxtPassword')
+
+pswrd.clear()
+
+pswrd.send_keys(entry.password)
+
+
+btn = driver.find_element_by_id('BtnEntrar')
+
+btn.click()
+
+time.sleep(1)
+
+
+#Internals Services
+
+driver.execute_script("window.open('https://ListagemRotinas.asp?TP_OPCAO=2&CD_OPCAO=SERVI%C7OS%20INTERNOS','_self');")
+
+time.sleep(3)
+
+
+#Grant Automation
+
+driver.execute_script("window.open('https://rcp_net/fraude/frmlinkacessospa.aspx?CD_ROTINA=248&DS_PARAMETRO=','_self');")
+
+time.sleep(3)
+
+
+#Service Queue
+
+driver.execute_script("window.open('https://rcp_net/fraude/ConsultaAtendimentoSubsidio.aspx','_self');")
+
+time.sleep(4)
+
+ 
+#Connection to records via Excel/SQL and couting of Protocols
+
+df = pd.read_excel('Fechamento_Robo_2430.xls', usecols=[0])
+
+for index, row in df.iterrows():
+
+   
+    #Protocolo Button
+
+    check = driver.find_element_by_id('ContentPlaceHolder1_chkBusca_0')
+
+    check.click()
+
+ 
+    protocolo = str(row['PROTOCOLO'])
+
+    texto = driver.find_element_by_id('ContentPlaceHolder1_txtBusca')
+
+    texto.clear()
+
+    texto.send_keys(protocolo[0:8])
+
+    time.sleep(1)
+
+    buscar = driver.find_element_by_id('ContentPlaceHolder1_btnBuscar')
+
+    buscar.click()
+
+    time.sleep(1)
+
+ 
+    print(protocolo)
+
+ 
+    #Flow Type
+
+    fluxo = driver.find_element_by_id('ContentPlaceHolder1_grdRelatorio_imgEdit_0')
+
+    fluxo.click()
+
+    time.sleep(1)
+
+ 
+    #Queue Type
+
+    fila = driver.find_element_by_id('ContentPlaceHolder1_grdRel_imgEdit_0')
+
+    fila.click()
+
+    time.sleep(1)
+
+ 
+    #Root Subject/Cause
+
+    assunto = driver.find_element_by_id('ContentPlaceHolder1_grdRelSubItem_imgEdit_0')
+
+    assunto.click()
+
+    time.sleep(3)
+
+
+    #Detailing of Calls
+
+    lupa = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table[2]/tbody/tr[16]/td/div/table/tbody/tr[2]/td[9]/a/img")
+
+    lupa.click()
+
+    time.sleep(1)
+
+ 
+    #No Attachment
+
+    #check= driver.find_element_by_id('ContentPlaceHolder1_chkListaAnexosConferencia_8')
+
+    #check.click()
+
+    #time.sleep(1)
+
+ 
+    #IDENTIFICATION DOCUMENT ANALYSIS
+
+    #Documento - Tratamento Automático
+
+    a = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[1]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div/div[2]/p")
+
+    a.click()
+
+    time.sleep(1)
+
+    sel1 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[1]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div/div[3]/div/ul/li[11]")
+
+    sel1.click()
+
+    time.sleep(1)
+
+    #trat1 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[1]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div/div[3]/div/ul/li[11]")
+
+    #trat1.click()
+
+
+    #PROOF OF ADDRESS ANALYSIS
+
+    #wait = WebDriverWait(driver, 10)
+
+    b = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[2]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div")
+
+    b.click()
+
+    time.sleep(1)
+
+    #sel2 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[2]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div")
+
+    #sel2.click()
+
+    #time.sleep(3)
+
+    trat2 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[2]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div/div[3]/div/ul/li[6]")
+
+    trat2.click()
+
+ 
+    #Signature Analysis
+
+    time.sleep(1)
+
+    c = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[3]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div")
+
+    c.click()
+
+    time.sleep(1)
+
+    trat3 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[3]/table/tbody/tr/td[2]/table/tbody/tr[1]/td[2]/div/div[3]/div/ul/li[8]")
+
+    trat3.click()
+
+    time.sleep(1)
+
+
+    #INFORMATION / CIRCULARIZATIONS OF THE HOME PHONE
+
+    d = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[4]/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div")
+
+    d.click()
+
+    time.sleep(1)
+
+    trat4 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[4]/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/div[3]/div/ul/li[14]")
+
+    trat4.click()
+
+    time.sleep(1)
+
+
+    #INFORMATION / CIRCULARIZATIONS OF THE MOBILE PHONE
+
+    e = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[5]/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div")
+
+    e.click()
+
+    time.sleep(1)
+
+    trat4 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/fieldset[5]/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/div[3]/div/ul/li[10]")
+
+    trat4.click()
+
+    time.sleep(1)
+
+
+    #DESTINATION OF PAYMENT/RELEASE - not reported
+
+    f = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/table[4]/tbody/tr/td[4]/div")
+
+    f.click()
+
+    time.sleep(1)
+
+    trat5 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[2]/table[4]/tbody/tr/td[4]/div/div[3]/div/ul/li[8]")
+
+    trat5.click()
+
+    time.sleep(1)
+
+ 
+    #Opinion
+
+    g = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[9]/table/tbody/tr/td/table/tbody/tr/td[2]/div")
+
+    g.click()
+
+    time.sleep(1)
+
+    trat6 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[9]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[3]/div/ul/li[27]")
+
+    trat6.click()
+
+    time.sleep(1)
+
+ 
+    #CHARGE BACK / OTHER ADM ACTIONS
+
+    h = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[2]/div")
+
+    h.click()
+
+    time.sleep(1)
+
+    trat7 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[2]/div/div[3]/div/ul/li[25]")
+
+    trat7.click()
+
+    time.sleep(1)
+
+
+    i = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[2]/div")
+
+    i.click()
+
+    time.sleep(1)
+
+    trat8 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[2]/div/div[3]/div/ul/li[25]")
+
+    trat8.click()
+
+    time.sleep(1)
+
+
+    j = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[2]/div")
+
+    j.click()
+
+    time.sleep(1)
+
+    trat9 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[2]/div/div[3]/div/ul/li[25]")
+
+    trat9.click()
+
+    time.sleep(1)
+
+
+    k = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[3]/div")
+
+    k.click()
+
+    time.sleep(1)
+
+    trat10 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[3]/div/div[3]/div/ul/li[13]")
+
+    trat10.click()
+
+    time.sleep(1)
+
+ 
+    l = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[3]/div")
+
+    l.click()
+
+    time.sleep(1)
+
+    trat11 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[3]/div/div[3]/div/ul/li[13]")
+
+    trat11.click()
+
+    time.sleep(1)
+
+ 
+    m = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[3]/div")
+
+    m.click()
+
+    time.sleep(1)
+
+    trat12 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[3]/div/div[3]/div/ul/li[13]")
+
+    trat12.click()
+
+    time.sleep(1)
+
+ 
+    n = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[4]/div/div[2]/p")
+
+    n.click()
+
+    time.sleep(1)
+
+    trat13 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[2]/td[4]/div/div[3]/div/ul/li[15]")
+
+    trat13.click()
+
+    time.sleep(1)
+
+ 
+    o = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[4]/div/div[2]/p")
+
+    o.click()
+
+    time.sleep(0.5)
+
+    trat14 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[3]/td[4]/div/div[3]/div/ul/li[15]")
+
+    trat14.click()
+
+    time.sleep(1)
+
+
+    p = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[4]/div/div[2]/p")
+
+    p.click()
+
+    time.sleep(0.5)
+
+    trat15 = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/div/table/tbody/tr/td/div/div[3]/fieldset[10]/table/tbody/tr[4]/td[4]/div/div[3]/div/ul/li[15]")
+
+    trat15.click()
+
+    time.sleep(2)
+    
+
+    #To End;
+
+    fin = driver.find_element_by_id('ContentPlaceHolder1_btnFinalizar')
+
+    actions = ActionChains(driver)
+
+    actions.move_to_element(fin).perform()
+
+    driver.execute_script("arguments[0].click();", fin)
+
+ 
+    #Internal Services
+
+    driver.execute_script("window.open('https://ListagemRotinas.asp?TP_OPCAO=2&CD_OPCAO=SERVI%C7OS%20INTERNOS','_self');")
+
+    time.sleep(3)
+
+
+    #Grant Automation
+
+    driver.execute_script("window.open('https://rcp_net/fraude/frmlinkacessospa.aspx?CD_ROTINA=248&DS_PARAMETRO=','_self');")
+
+    time.sleep(3)
+
+ 
